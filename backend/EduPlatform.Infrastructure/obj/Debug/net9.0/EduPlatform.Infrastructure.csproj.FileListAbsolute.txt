@@ -1,0 +1,16 @@
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\bin\Debug\net9.0\EduPlatform.Infrastructure.deps.json
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\bin\Debug\net9.0\EduPlatform.Infrastructure.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\bin\Debug\net9.0\EduPlatform.Infrastructure.pdb
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\bin\Debug\net9.0\EduPlatform.Core.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\bin\Debug\net9.0\EduPlatform.Core.pdb
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\EduPlatform.Infrastructure.csproj.AssemblyReference.cache
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\EduPlatform.Infrastructure.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\EduPlatform.Infrastructure.AssemblyInfoInputs.cache
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\EduPlatform.Infrastructure.AssemblyInfo.cs
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\EduPlatform.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\EduPlatform.Infrastructure.sourcelink.json
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\EduPlatf.70BA1961.Up2Date
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\EduPlatform.Infrastructure.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\refint\EduPlatform.Infrastructure.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\EduPlatform.Infrastructure.pdb
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\ref\EduPlatform.Infrastructure.dll

@@ -1,0 +1,12 @@
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Core\bin\Debug\net9.0\EduPlatform.Core.deps.json
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Core\bin\Debug\net9.0\EduPlatform.Core.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Core\bin\Debug\net9.0\EduPlatform.Core.pdb
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Core\obj\Debug\net9.0\EduPlatform.Core.GeneratedMSBuildEditorConfig.editorconfig
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Core\obj\Debug\net9.0\EduPlatform.Core.AssemblyInfoInputs.cache
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Core\obj\Debug\net9.0\EduPlatform.Core.AssemblyInfo.cs
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Core\obj\Debug\net9.0\EduPlatform.Core.csproj.CoreCompileInputs.cache
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Core\obj\Debug\net9.0\EduPlatform.Core.sourcelink.json
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Core\obj\Debug\net9.0\EduPlatform.Core.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Core\obj\Debug\net9.0\refint\EduPlatform.Core.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Core\obj\Debug\net9.0\EduPlatform.Core.pdb
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Core\obj\Debug\net9.0\ref\EduPlatform.Core.dll
