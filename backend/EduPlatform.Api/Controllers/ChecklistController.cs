@@ -1,10 +1,4 @@
 ﻿// === File: /backend/EduPlatform.Api/Controllers/ChecklistController.cs ===
-using System.Security.Claims;
-using EduPlatform.Core.Entities;
-using EduPlatform.Infrastructure.Data;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace EduPlatform.Api.Controllers;
 

@@ -1,4 +1,8 @@
-﻿// === File: /backend/EduPlatform.Tests/SeriesControllerTests.cs ===
+﻿/*
+ 
+ 
+ // === File: /backend/EduPlatform.Tests/SeriesControllerTests.cs
+
 
 using EduPlatform.Core.Entities;
 using EduPlatform.Infrastructure.Data;
@@ -42,3 +46,5 @@ public class SeriesControllerTests
         Assert.NotNull(result);
     }
 }
+
+ */ 

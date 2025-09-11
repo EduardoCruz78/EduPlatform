@@ -1,7 +1,4 @@
 ﻿// === File: /backend/EduPlatform.Api/Controllers/VestibularesController.cs ===
-using EduPlatform.Infrastructure.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace EduPlatform.Api.Controllers;
 

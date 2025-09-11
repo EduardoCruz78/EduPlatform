@@ -1,25 +1,22 @@
 ﻿// === File: /backend/EduPlatform.Api/Controllers/SeriesController.cs ===
-using EduPlatform.Infrastructure.Data;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using AutoMapper;
+using EduPlatform.Infrastructure.Data;
 using EduPlatform.Core.DTOs;
 
 namespace EduPlatform.Api.Controllers;
 
 [ApiController]
-[Route("api/series")]
+[Route("api/[controller]")]
 public class SeriesController : ControllerBase
 {
     private readonly AppDbContext _db;
-    private readonly IMapper _mapper;
+    public SeriesController(AppDbContext db) => _db = db;
 
-    public SeriesController(AppDbContext db, IMapper mapper)
-    {
-        _db = db;
-        _mapper = mapper;
-    }
-
+    // GET /api/series  -> retorna apenas id + name para evitar erros de navegação
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
@@ -27,55 +24,74 @@ public class SeriesController : ControllerBase
         {
             var list = await _db.Series
                 .AsNoTracking()
-                .Include(s => s.Subjects) // garante que Subjects sejam carregados
+                .Select(s => new SeriesDto
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    // não preenchemos Subjects aqui para evitar dependência de navegação
+                    Subjects = new System.Collections.Generic.List<SubjectDto>()
+                })
                 .ToListAsync();
 
-            var dtos = _mapper.Map<IEnumerable<SeriesDto>>(list);
-            return Ok(dtos);
+            return Ok(list);
         }
         catch (Exception ex)
         {
+            Console.Error.WriteLine($"[SeriesController.GetAll] Erro: {ex}");
             return Problem($"Erro ao obter séries: {ex.Message}", statusCode: 500);
         }
     }
 
+    // GET /api/series/{id}
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> GetById(int id)
     {
         try
         {
-            var series = await _db.Series
+            var s = await _db.Series
                 .AsNoTracking()
-                .Include(s => s.Subjects)
-                .FirstOrDefaultAsync(s => s.Id == id);
+                .Where(x => x.Id == id)
+                .Select(x => new SeriesDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Subjects = new System.Collections.Generic.List<SubjectDto>()
+                })
+                .FirstOrDefaultAsync();
 
-            if (series == null) return NotFound(new { Message = "Série não encontrada" });
-
-            var dto = _mapper.Map<SeriesDto>(series);
-            return Ok(dto);
+            if (s == null) return NotFound();
+            return Ok(s);
         }
         catch (Exception ex)
         {
+            Console.Error.WriteLine($"[SeriesController.GetById] Erro: {ex}");
             return Problem($"Erro ao obter série: {ex.Message}", statusCode: 500);
         }
     }
 
+    // GET /api/series/{id}/subjects  -> robusto: pega subjects via SeriesId
     [HttpGet("{id:int}/subjects")]
     public async Task<IActionResult> GetSubjects(int id)
     {
         try
         {
             var subjects = await _db.Subjects
-                .Where(s => s.SeriesId == id)
                 .AsNoTracking()
+                .Where(s => s.SeriesId == id)
+                .Select(s => new SubjectDto
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    SeriesId = s.SeriesId
+                })
                 .ToListAsync();
 
-            var dtos = _mapper.Map<IEnumerable<SubjectDto>>(subjects);
-            return Ok(dtos);
+            return Ok(subjects);
         }
         catch (Exception ex)
         {
-            return Problem($"Erro ao obter subjects: {ex.Message}", statusCode: 500);
+            Console.Error.WriteLine($"[SeriesController.GetSubjects] Erro: {ex}");
+            return Problem($"Erro ao obter matérias da série: {ex.Message}", statusCode: 500);
         }
     }
 }

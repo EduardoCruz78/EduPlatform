@@ -26,12 +26,14 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<TopicSubject>()
             .HasOne(ts => ts.Topic)
             .WithMany(t => t.TopicSubjects)
-            .HasForeignKey(ts => ts.TopicId);
+            .HasForeignKey(ts => ts.TopicId)
+            .OnDelete(DeleteBehavior.Cascade); // remove join entries when Topic deleted
 
         modelBuilder.Entity<TopicSubject>()
             .HasOne(ts => ts.Subject)
             .WithMany(s => s.TopicSubjects)
-            .HasForeignKey(ts => ts.SubjectId);
+            .HasForeignKey(ts => ts.SubjectId)
+            .OnDelete(DeleteBehavior.Cascade); // remove join entries when Subject deleted
 
         // Series -> Subjects (one-to-many)
         modelBuilder.Entity<Subject>()
@@ -39,6 +41,13 @@ public class AppDbContext : DbContext
             .WithMany(ses => ses.Subjects)
             .HasForeignKey(s => s.SeriesId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        // Topic -> Contents (one-to-many) -> cascade delete contents when topic removed
+        modelBuilder.Entity<Content>()
+            .HasOne(c => c.Topic)
+            .WithMany(t => t.Contents)
+            .HasForeignKey(c => c.TopicId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         base.OnModelCreating(modelBuilder);
     }

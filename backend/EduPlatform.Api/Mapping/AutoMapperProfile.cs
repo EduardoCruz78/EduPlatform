@@ -1,7 +1,4 @@
 ﻿// === File: /backend/EduPlatform.Api/Mapping/AutoMapperProfile.cs ===
-using AutoMapper;
-using EduPlatform.Core.DTOs;
-using EduPlatform.Core.Entities;
 
 namespace EduPlatform.Api.Mapping
 {
