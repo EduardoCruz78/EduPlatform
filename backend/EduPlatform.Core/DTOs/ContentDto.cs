@@ -8,6 +8,6 @@ public class ContentDto
     public string Type { get; set; } = string.Empty;
     public string Link { get; set; } = string.Empty;
     public string ThumbnailUrl { get; set; } = string.Empty;
-
+    public string PdfUrl { get; set; } = string.Empty;
     public int TopicId { get; set; }
 }

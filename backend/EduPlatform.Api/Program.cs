@@ -1,9 +1,3 @@
-using EduPlatform.Infrastructure;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.EntityFrameworkCore;
-using EduPlatform.Api;
-
 var builder = WebApplication.CreateBuilder(args);
 
 var configuration = builder.Configuration;

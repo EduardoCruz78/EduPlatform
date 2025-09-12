@@ -1,4 +1,8 @@
-﻿// === File: /backend/EduPlatform.Api/Controllers/TopicsController.cs ===
+﻿using EduPlatform.Core.DTOs;
+using EduPlatform.Core.Entities;
+using EduPlatform.Infrastructure.Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EduPlatform.Api.Controllers;
 
@@ -16,9 +20,26 @@ public class TopicsController : ControllerBase
     {
         var list = await _db.Topics
             .AsNoTracking()
+            .Include(t => t.TopicSubjects)
+                .ThenInclude(ts => ts.Subject)
+                    .ThenInclude(s => s.Series)
             .ToListAsync();
 
-        var dto = list.Select(t => new { id = t.Id, name = t.Name });
+        var dto = list.Select(t => new
+        {
+            id = t.Id,
+            name = t.Name,
+            // pega o primeiro subjectId caso exista (útil para formulários que vinculam 1 matéria)
+            subjectId = t.TopicSubjects.Select(ts => ts.SubjectId).FirstOrDefault(),
+            // lista completa de matérias relacionadas (id, name, seriesId)
+            subjects = t.TopicSubjects.Select(ts => new
+            {
+                id = ts.Subject.Id,
+                name = ts.Subject.Name,
+                seriesId = ts.Subject.SeriesId
+            }).ToList()
+        });
+
         return Ok(dto);
     }
 
@@ -26,13 +47,32 @@ public class TopicsController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
-        var topic = await _db.Topics.AsNoTracking().FirstOrDefaultAsync(t => t.Id == id);
+        var topic = await _db.Topics
+            .AsNoTracking()
+            .Include(t => t.TopicSubjects)
+                .ThenInclude(ts => ts.Subject)
+                    .ThenInclude(s => s.Series)
+            .FirstOrDefaultAsync(t => t.Id == id);
+
         if (topic == null) return NotFound();
-        return Ok(new { id = topic.Id, name = topic.Name });
+
+        var dto = new
+        {
+            id = topic.Id,
+            name = topic.Name,
+            subjectId = topic.TopicSubjects.Select(ts => ts.SubjectId).FirstOrDefault(),
+            subjects = topic.TopicSubjects.Select(ts => new
+            {
+                id = ts.Subject.Id,
+                name = ts.Subject.Name,
+                seriesId = ts.Subject.SeriesId
+            }).ToList()
+        };
+
+        return Ok(dto);
     }
 
     // POST /api/topics
-    // Accepts TopicCreateDto: { name/title, subjectId or subjectIds[] }
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] TopicCreateDto dto)
     {
@@ -46,16 +86,13 @@ public class TopicsController : ControllerBase
             _db.Topics.Add(topic);
             await _db.SaveChangesAsync();
 
-            // link to subjects if any provided (single or list)
             var subjectIds = new List<int>();
             if (dto.SubjectId.HasValue) subjectIds.Add(dto.SubjectId.Value);
             if (dto.SubjectIds != null && dto.SubjectIds.Any()) subjectIds.AddRange(dto.SubjectIds);
-
             subjectIds = subjectIds.Distinct().ToList();
 
             if (subjectIds.Any())
             {
-                // validate subjects exist
                 var existing = await _db.Subjects.Where(s => subjectIds.Contains(s.Id)).Select(s => s.Id).ToListAsync();
                 foreach (var sid in existing)
                 {
@@ -88,7 +125,6 @@ public class TopicsController : ControllerBase
         _db.Topics.Update(topic);
         await _db.SaveChangesAsync();
 
-        // If subject links provided, replace associations
         if (dto.SubjectId.HasValue || (dto.SubjectIds != null && dto.SubjectIds.Any()))
         {
             var newIds = new List<int>();
@@ -96,12 +132,10 @@ public class TopicsController : ControllerBase
             if (dto.SubjectIds != null) newIds.AddRange(dto.SubjectIds);
             newIds = newIds.Distinct().ToList();
 
-            // remove old joins
             var oldJoins = await _db.TopicSubjects.Where(ts => ts.TopicId == id).ToListAsync();
             _db.TopicSubjects.RemoveRange(oldJoins);
             await _db.SaveChangesAsync();
 
-            // add new joins (validate existence)
             var exist = await _db.Subjects.Where(s => newIds.Contains(s.Id)).Select(s => s.Id).ToListAsync();
             foreach (var sid in exist)
             {
@@ -123,7 +157,6 @@ public class TopicsController : ControllerBase
             var topic = await _db.Topics.FindAsync(id);
             if (topic == null) return NotFound();
 
-            // remove TopicSubject joins
             var joins = await _db.TopicSubjects.Where(ts => ts.TopicId == id).ToListAsync();
             if (joins.Any())
             {
@@ -131,7 +164,6 @@ public class TopicsController : ControllerBase
                 await _db.SaveChangesAsync();
             }
 
-            // remove contents (AppDbContext has cascade for contents but we remove explicitly for clarity)
             var contents = await _db.Contents.Where(c => c.TopicId == id).ToListAsync();
             if (contents.Any())
             {
@@ -139,7 +171,6 @@ public class TopicsController : ControllerBase
                 await _db.SaveChangesAsync();
             }
 
-            // remove topic
             _db.Topics.Remove(topic);
             await _db.SaveChangesAsync();
 

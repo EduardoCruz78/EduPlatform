@@ -6,7 +6,6 @@ import Home from './pages/Home'
 import SeriesPage from './pages/Series'
 import SubjectPage from './pages/Subject'
 import TopicPage from './pages/Topic'
-import ContentPage from './pages/Content'
 
 // Admin
 import AdminLayout from './pages/admin/AdminLayout'
@@ -21,14 +20,13 @@ export default function App() {
       <Navbar />
       <main className="container mx-auto p-4">
         <Routes>
-          {/* Rotas existentes */}
+          {/* Rotas públicas */}
           <Route path="/" element={<Home />} />
           <Route path="/series/:id" element={<SeriesPage />} />
           <Route path="/subjects/:id" element={<SubjectPage />} />
           <Route path="/topics/:id" element={<TopicPage />} />
-          <Route path="/contents/:id" element={<ContentPage />} />
 
-          {/* Rotas de Admin */}
+          {/* Rotas Admin (aninhadas) */}
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="series" element={<SeriesAdmin />} />
             <Route path="subjects" element={<SubjectsAdmin />} />

@@ -7,46 +7,53 @@ export default function SeriesPage() {
   const { id } = useParams()
   const [series, setSeries] = useState(null)
   const [subjects, setSubjects] = useState([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     let mounted = true
     ;(async () => {
+      setLoading(true)
       try {
-        const res = await api.get(`/api/series/${id}`)
+        const [sRes, subRes] = await Promise.all([
+          api.get(`/api/series/${id}`),
+          api.get(`/api/series/${id}/subjects`)
+        ])
         if (!mounted) return
-        setSeries(res.data)
+        setSeries(sRes.data)
+        setSubjects(Array.isArray(subRes.data) ? subRes.data : [])
       } catch (e) {
         console.error(e)
-      }
-
-      try {
-        const res2 = await api.get(`/api/series/${id}/subjects`)
-        if (!mounted) return
-        setSubjects(res2.data)
-      } catch (e) {
-        console.error(e)
+      } finally {
+        if (mounted) setLoading(false)
       }
     })()
     return () => { mounted = false }
   }, [id])
 
-  if (!series) return <div className="card">Loading...</div>
+  if (loading) return <div className="p-6">Carregando...</div>
+  if (!series) return <div className="p-6">Série não encontrada.</div>
 
   return (
-    <section>
-      <h1 className="text-2xl font-semibold mb-2">{series.name}</h1>
-      <div className="grid gap-3">
+    <div className="px-6 py-8 max-w-5xl mx-auto">
+      <header className="mb-6">
+        <h1 className="text-2xl font-bold text-slate-900">{series.name}</h1>
+        <p className="text-sm text-slate-500 mt-1">Matérias disponíveis</p>
+      </header>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {subjects.map(sub => (
-          <div key={sub.id} className="card flex items-center justify-between">
+          <div key={sub.id} className="bg-white rounded-lg shadow p-4 flex items-center justify-between">
             <div>
-              <div className="font-medium">{sub.name}</div>
+              <div className="font-medium text-slate-800">{sub.name}</div>
             </div>
-            <div>
-              <Link to={`/subjects/${sub.id}`} className="px-3 py-1 bg-indigo-600 text-white rounded">Open</Link>
-            </div>
+            <Link to={`/subjects/${sub.id}`} className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700">Abrir</Link>
           </div>
         ))}
+
+        {subjects.length === 0 && (
+          <div className="col-span-full p-6 rounded bg-yellow-50 text-yellow-800">Nenhuma matéria nessa série.</div>
+        )}
       </div>
-    </section>
+    </div>
   )
 }

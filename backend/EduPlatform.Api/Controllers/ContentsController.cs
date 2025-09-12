@@ -1,8 +1,4 @@
-﻿// === File: /backend/EduPlatform.Api/Controllers/ContentsController.cs ===
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using EduPlatform.Core.DTOs;
+﻿using EduPlatform.Core.DTOs;
 using EduPlatform.Core.Entities;
 using EduPlatform.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -15,122 +11,146 @@ namespace EduPlatform.Api.Controllers;
 public class ContentsController : ControllerBase
 {
     private readonly AppDbContext _db;
+
     public ContentsController(AppDbContext db) => _db = db;
 
-    // GET /api/contents
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
-        var list = await _db.Contents.AsNoTracking().ToListAsync();
-        var dto = list.Select(c => new {
-            id = c.Id,
-            title = c.Title,
-            type = c.Type,
-            link = c.Link,
-            thumbnailUrl = c.ThumbnailUrl,
-            topicId = c.TopicId
-        });
-        return Ok(dto);
+        var list = await _db.Contents
+            .AsNoTracking()
+            .Select(c => new {
+                Id = c.Id,
+                Title = c.Title,
+                Type = c.Type,
+                Link = c.Link,
+                ThumbnailUrl = c.ThumbnailUrl,
+                PdfUrl = c.PdfUrl,
+                TopicId = c.TopicId
+            })
+            .ToListAsync();
+
+        return Ok(list);
     }
 
-    // GET /api/contents/{id}
     [HttpGet("{id:int}")]
     public async Task<IActionResult> Get(int id)
     {
-        var content = await _db.Contents.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
-        if (content == null) return NotFound();
-        return Ok(new {
-            id = content.Id,
-            title = content.Title,
-            type = content.Type,
-            link = content.Link,
-            thumbnailUrl = content.ThumbnailUrl,
-            topicId = content.TopicId
+        var c = await _db.Contents.AsNoTracking().FirstOrDefaultAsync(x => x.Id == id);
+        if (c == null) return NotFound();
+        var dto = new {
+            Id = c.Id,
+            Title = c.Title,
+            Type = c.Type,
+            Link = c.Link,
+            ThumbnailUrl = c.ThumbnailUrl,
+            PdfUrl = c.PdfUrl,
+            TopicId = c.TopicId
+        };
+        return Ok(dto);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] ContentCreateDto dto)
+    {
+        if (dto == null) return BadRequest("Payload is required.");
+        if (string.IsNullOrWhiteSpace(dto.Title)) return BadRequest("Title is required.");
+        if (dto.TopicId <= 0) return BadRequest("TopicId is required and must be > 0.");
+
+        var type = (dto.Type ?? "Video").Trim();
+
+        // validação condicional: Link é obrigatório apenas para Video
+        if (type.Equals("Video", StringComparison.OrdinalIgnoreCase))
+        {
+            if (string.IsNullOrWhiteSpace(dto.Link))
+                return BadRequest(new {
+                    type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+                    title = "One or more validation errors occurred.",
+                    status = 400,
+                    errors = new { Link = new[] { "The Link field is required for Video type." } }
+                });
+        }
+
+        var topicExists = await _db.Topics.AnyAsync(t => t.Id == dto.TopicId);
+        if (!topicExists) return BadRequest("Topic not found.");
+
+        var content = new Content
+        {
+            Title = dto.Title!.Trim(),
+            Type = type,
+            Link = dto.Link,
+            ThumbnailUrl = dto.ThumbnailUrl,
+            PdfUrl = dto.PdfUrl,
+            TopicId = dto.TopicId
+        };
+
+        _db.Contents.Add(content);
+        await _db.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(Get), new { id = content.Id }, new {
+            Id = content.Id,
+            Title = content.Title,
+            Type = content.Type,
+            Link = content.Link,
+            ThumbnailUrl = content.ThumbnailUrl,
+            PdfUrl = content.PdfUrl,
+            TopicId = content.TopicId
         });
     }
 
-    // POST /api/contents
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] ContentDto dto)
-    {
-        try
-        {
-            // basic validation and clearer messages
-            if (dto == null) return BadRequest("Payload inválido (body ausente).");
-            if (string.IsNullOrWhiteSpace(dto.Title)) return BadRequest("Title is required.");
-            if (dto.TopicId <= 0) return BadRequest("TopicId is required and must be > 0.");
-
-            // verify topic exists
-            var topic = await _db.Topics.FindAsync(dto.TopicId);
-            if (topic == null) return BadRequest($"Topic not found (id={dto.TopicId}).");
-
-            var entity = new Content
-            {
-                Title = dto.Title,
-                Type = string.IsNullOrWhiteSpace(dto.Type) ? "Video" : dto.Type,
-                Link = dto.Link ?? string.Empty,
-                ThumbnailUrl = dto.ThumbnailUrl ?? string.Empty,
-                TopicId = dto.TopicId
-            };
-
-            _db.Contents.Add(entity);
-            await _db.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(Get), new { id = entity.Id }, new {
-                id = entity.Id,
-                title = entity.Title,
-                type = entity.Type,
-                link = entity.Link,
-                thumbnailUrl = entity.ThumbnailUrl,
-                topicId = entity.TopicId
-            });
-        }
-        catch (Exception ex)
-        {
-            Console.Error.WriteLine($"[ContentsController.Create] Erro ao criar content: {ex}");
-            return Problem($"Erro interno ao criar conteúdo: {ex.Message}");
-        }
-    }
-
-    // PUT /api/contents/{id}
     [HttpPut("{id:int}")]
-    public async Task<IActionResult> Update(int id, [FromBody] ContentDto dto)
+    public async Task<IActionResult> Update(int id, [FromBody] ContentCreateDto dto)
     {
-        if (dto == null || id != dto.Id) return BadRequest();
-        var entity = await _db.Contents.FindAsync(id);
-        if (entity == null) return NotFound();
+        var content = await _db.Contents.FindAsync(id);
+        if (content == null) return NotFound();
+        if (dto == null) return BadRequest();
+        if (string.IsNullOrWhiteSpace(dto.Title)) return BadRequest("Title is required.");
+        if (dto.TopicId <= 0) return BadRequest("TopicId is required and must be > 0.");
 
-        // validate topic exists
-        var topic = await _db.Topics.FindAsync(dto.TopicId);
-        if (topic == null) return BadRequest($"Topic not found (id={dto.TopicId}).");
+        var type = (dto.Type ?? content.Type ?? "Video").Trim();
+        if (type.Equals("Video", StringComparison.OrdinalIgnoreCase))
+        {
+            // se nem o payload nem o registro atual tem link, erro
+            if (string.IsNullOrWhiteSpace(dto.Link) && string.IsNullOrWhiteSpace(content.Link))
+                return BadRequest(new {
+                    type = "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+                    title = "One or more validation errors occurred.",
+                    status = 400,
+                    errors = new { Link = new[] { "The Link field is required for Video type." } }
+                });
+        }
 
-        entity.Title = dto.Title;
-        entity.Type = dto.Type;
-        entity.Link = dto.Link;
-        entity.ThumbnailUrl = dto.ThumbnailUrl;
-        entity.TopicId = dto.TopicId;
+        var topicExists = await _db.Topics.AnyAsync(t => t.Id == dto.TopicId);
+        if (!topicExists) return BadRequest("Topic not found.");
 
-        _db.Contents.Update(entity);
+        content.Title = dto.Title!.Trim();
+        content.Type = type;
+        if (dto.Link != null) content.Link = dto.Link;
+        if (dto.ThumbnailUrl != null) content.ThumbnailUrl = dto.ThumbnailUrl;
+        if (dto.PdfUrl != null) content.PdfUrl = dto.PdfUrl;
+        content.TopicId = dto.TopicId;
+
+        _db.Contents.Update(content);
         await _db.SaveChangesAsync();
 
         return Ok(new {
-            id = entity.Id,
-            title = entity.Title,
-            type = entity.Type,
-            link = entity.Link,
-            thumbnailUrl = entity.ThumbnailUrl,
-            topicId = entity.TopicId
+            Id = content.Id,
+            Title = content.Title,
+            Type = content.Type,
+            Link = content.Link,
+            ThumbnailUrl = content.ThumbnailUrl,
+            PdfUrl = content.PdfUrl,
+            TopicId = content.TopicId
         });
     }
 
-    // DELETE /api/contents/{id}
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var entity = await _db.Contents.FindAsync(id);
-        if (entity == null) return NotFound();
+        var content = await _db.Contents.FindAsync(id);
+        if (content == null) return NotFound();
 
-        _db.Contents.Remove(entity);
+        _db.Contents.Remove(content);
         await _db.SaveChangesAsync();
         return NoContent();
     }
