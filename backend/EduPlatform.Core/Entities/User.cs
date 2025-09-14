@@ -1,8 +1,4 @@
 ﻿// === File: /backend/EduPlatform.Core/Entities/User.cs ===
-using System.ComponentModel.DataAnnotations;
-using System.Security.Claims;
-using EduPlatform.Core.DTOs;
-using EduPlatform.Core.Interfaces;
 
 namespace EduPlatform.Core.Entities;
 

@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// === File: /backend/EduPlatform.Core/Entities/Content.cs ===
 
 namespace EduPlatform.Core.Entities;
 
@@ -6,17 +6,15 @@ public class Content
 {
     [Key]
     public int Id { get; set; }
-
-    [Required]
     public string Title { get; set; } = string.Empty;
 
-    // Tipo: "Video", "Exercise", "Simulated"...
-    public string Type { get; set; } = "Video";
+    // e.g., Video, Exercise, Simulated
+    public string Type { get; set; } = string.Empty;
+    public string Link { get; set; } = string.Empty;
+    public string ThumbnailUrl { get; set; } = string.Empty;
 
-    // Agora opcionais (nullable) — permite criar Exercise sem Link
-    public string? Link { get; set; }
-    public string? ThumbnailUrl { get; set; }
-    public string? PdfUrl { get; set; }
+    // NOVO: link para PDF/exercícios
+    public string? PdfUrl { get; set; } = null;
 
     public int TopicId { get; set; }
     public Topic Topic { get; set; } = null!;

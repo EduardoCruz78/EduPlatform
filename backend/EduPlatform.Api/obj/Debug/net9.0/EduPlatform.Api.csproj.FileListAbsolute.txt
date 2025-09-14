@@ -139,3 +139,10 @@ C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Api\obj\Debug\net9.0\
 C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Api\obj\Debug\net9.0\EduPlatform.Api.pdb
 C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Api\obj\Debug\net9.0\EduPlatform.Api.genruntimeconfig.cache
 C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Api\obj\Debug\net9.0\ref\EduPlatform.Api.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Api\bin\Debug\net9.0\Microsoft.Extensions.Configuration.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Api\bin\Debug\net9.0\Microsoft.Extensions.Configuration.FileExtensions.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Api\bin\Debug\net9.0\Microsoft.Extensions.Configuration.Json.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Api\bin\Debug\net9.0\Microsoft.Extensions.FileProviders.Abstractions.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Api\bin\Debug\net9.0\Microsoft.Extensions.FileProviders.Physical.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Api\bin\Debug\net9.0\Microsoft.Extensions.FileSystemGlobbing.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Api\bin\Debug\net9.0\Microsoft.Extensions.Configuration.EnvironmentVariables.dll

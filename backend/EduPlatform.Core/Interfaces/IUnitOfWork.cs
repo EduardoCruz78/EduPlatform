@@ -1,7 +1,5 @@
 ﻿// === File: /backend/EduPlatform.Core/Interfaces/IUnitOfWork.cs ===
 
-using EduPlatform.Core.Entities;
-
 namespace EduPlatform.Core.Interfaces;
 
 public interface IUnitOfWork : IAsyncDisposable

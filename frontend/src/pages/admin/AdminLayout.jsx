@@ -10,6 +10,7 @@ export default function AdminLayout() {
         <Link to="/admin/subjects" className="text-blue-600">Matérias</Link>
         <Link to="/admin/topics" className="text-blue-600">Tópicos</Link>
         <Link to="/admin/contents" className="text-blue-600">Conteúdos</Link>
+        <Link to="/admin/vestibulares" className="text-blue-600">Vestibulares</Link> {/* novo */}
       </nav>
       <Outlet />
     </div>

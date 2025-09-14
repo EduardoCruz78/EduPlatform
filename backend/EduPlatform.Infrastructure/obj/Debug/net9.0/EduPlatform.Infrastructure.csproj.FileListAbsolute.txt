@@ -14,3 +14,5 @@ C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\De
 C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\refint\EduPlatform.Infrastructure.dll
 C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\EduPlatform.Infrastructure.pdb
 C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\ref\EduPlatform.Infrastructure.dll
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\bin\Debug\net9.0\EduPlatform.Infrastructure.runtimeconfig.json
+C:\Projects\ProjetoEscolar\EduPlatform\backend\EduPlatform.Infrastructure\obj\Debug\net9.0\EduPlatform.Infrastructure.genruntimeconfig.cache

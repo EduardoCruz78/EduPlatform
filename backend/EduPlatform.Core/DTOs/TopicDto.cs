@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace EduPlatform.Core.DTOs;
+﻿namespace EduPlatform.Core.DTOs;
 
 public class TopicDto
 {

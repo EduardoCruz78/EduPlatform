@@ -1,8 +1,4 @@
 ﻿// === File: /backend/EduPlatform.Infrastructure/Repositories/UnitOfWork.cs ===
-using EduPlatform.Core.Entities;
-using EduPlatform.Core.Interfaces;
-using EduPlatform.Infrastructure.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace EduPlatform.Infrastructure.Repositories;
 

@@ -1,4 +1,4 @@
-// === File: /frontend/src/pages/Topic.jsx ===
+// src/pages/Topic.jsx
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import api from '../services/api'
@@ -28,15 +28,19 @@ export default function TopicPage() {
         setContents(contentsRes.data || [])
 
         const thumbsMap = {}
-        await Promise.all((contentsRes.data || []).map(async c => {
-          const url = c.link || ''
-          // try YouTube sync
+        await Promise.all((contentsRes.data || []).map(async raw => {
+          const cid = getAnyField(raw, ['id','Id']) ?? raw.id
+          const url = getAnyField(raw, ['link','Link','url']) || ''
+          if (!cid || !url) return
+
+          if ((getAnyField(raw, ['type','Type']) || '').toLowerCase() !== 'video') return
+
           const yt = extractYouTubeId(url)
           if (yt) {
-            thumbsMap[c.id] = `https://img.youtube.com/vi/${yt}/hqdefault.jpg`
+            thumbsMap[cid] = `https://img.youtube.com/vi/${yt}/hqdefault.jpg`
             return
           }
-          // try Vimeo oEmbed
+
           const vimeoId = extractVimeoId(url)
           if (vimeoId) {
             try {
@@ -45,7 +49,7 @@ export default function TopicPage() {
               if (r.ok) {
                 const j = await r.json()
                 if (j && j.thumbnail_url) {
-                  thumbsMap[c.id] = j.thumbnail_url
+                  thumbsMap[cid] = j.thumbnail_url
                   return
                 }
               }
@@ -53,18 +57,18 @@ export default function TopicPage() {
               console.warn('Vimeo oEmbed falhou para', url, err)
             }
           }
-          // backend fallback (if controller exists)
+
           try {
             const tRes = await api.get('/api/thumbnail', { params: { url } })
             if (tRes.data?.thumbnailUrl) {
-              thumbsMap[c.id] = tRes.data.thumbnailUrl
+              thumbsMap[cid] = tRes.data.thumbnailUrl
               return
             } else if (tRes.data?.thumbnailDataUrl) {
-              thumbsMap[c.id] = tRes.data.thumbnailDataUrl
+              thumbsMap[cid] = tRes.data.thumbnailDataUrl
               return
             }
           } catch (err) {
-            // leave undefined
+            // ignore
           }
         }))
 
@@ -82,9 +86,18 @@ export default function TopicPage() {
     return () => { mounted = false }
   }, [id])
 
+  function getAnyField(obj, names) {
+    if (!obj) return null
+    for (const n of names) {
+      if (Object.prototype.hasOwnProperty.call(obj, n) && obj[n] != null) return obj[n]
+    }
+    return null
+  }
+
   function extractYouTubeId(url) {
     if (!url) return null
     try {
+      // regex corrigido: apenas uma barra invertida onde necessário
       const ytRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/
       const m = url.match(ytRegex)
       if (m && m[1]) return m[1]
@@ -98,6 +111,7 @@ export default function TopicPage() {
   function extractVimeoId(url) {
     if (!url) return null
     try {
+      // regex corrigido
       const vimeoRegex = /vimeo\.com\/(?:.*\/)?([0-9]+)/
       const m = url.match(vimeoRegex)
       if (m && m[1]) return m[1]
@@ -105,77 +119,100 @@ export default function TopicPage() {
     return null
   }
 
+  function mapTypeDisplay(typeRaw) {
+    if (!typeRaw) return 'Material'
+    const t = String(typeRaw).toLowerCase()
+    if (t === 'video') return 'Vídeo'
+    if (t === 'exercise') return 'Exercício'
+    if (t === 'simulated') return 'Simulado'
+    return String(typeRaw).charAt(0).toUpperCase() + String(typeRaw).slice(1)
+  }
+
+  function mapTypeSmall(typeRaw) {
+    const mapped = mapTypeDisplay(typeRaw)
+    if (mapped === 'Exercício') return 'exercício'
+    return mapped.charAt(0).toLowerCase() + mapped.slice(1)
+  }
+
   if (loading) return <div className="p-6">Carregando tópico e conteúdos...</div>
   if (error) return <div className="p-6 text-red-600">{error}</div>
   if (!topic) return <div className="p-6">Tópico não encontrado.</div>
 
+  function getOpenUrl(raw) {
+    const pdf = getAnyField(raw, ['pdfUrl','PdfUrl','pdf_url','pdf'])
+    const link = getAnyField(raw, ['link','Link','url'])
+    if (pdf) return pdf
+    if (link) return link
+    return null
+  }
+
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 bg-white rounded shadow">
       <header className="mb-6">
-        <div className="text-sm text-gray-500">{topic.name}</div>
-        <h1 className="text-2xl font-semibold mt-1">Conteúdos do tópico</h1>
+        <div className="text-sm text-accent-700 font-medium">{getAnyField(topic, ['name','Name'])}</div>
+        <h1 className="text-2xl font-semibold mt-1 text-slate-800">Conteúdos do tópico</h1>
       </header>
 
       <div className="grid gap-6">
         {contents.length === 0 && <div className="text-gray-500">Nenhum conteúdo cadastrado para este tópico.</div>}
 
-        {contents.map(c => (
-          <article key={c.id} className="border rounded p-4 shadow-sm bg-white">
-            <div className="md:flex md:gap-4">
-              <div className="md:w-1/3 mb-4 md:mb-0">
-                {thumbs[c.id] ? (
-                  <img
-                    src={thumbs[c.id]}
-                    alt={`Thumb - ${c.title}`}
-                    className="w-full h-44 object-cover rounded"
-                    onError={(e) => { e.currentTarget.style.display = 'none' }}
-                  />
-                ) : (
-                  <div className="w-full h-44 bg-gray-100 rounded flex items-center justify-center text-gray-400">Sem imagem</div>
-                )}
-              </div>
+        {contents.map(raw => {
+          const cid = getAnyField(raw, ['id','Id']) ?? raw.id
+          const title = getAnyField(raw, ['title','Title']) || ''
+          const type = (getAnyField(raw, ['type','Type']) || '').toLowerCase()
+          const isVideo = type === 'video'
+          const openUrl = getOpenUrl(raw)
+          const thumb = thumbs[cid]
 
-              <div className="md:flex-1">
-                <h2 className="text-lg font-medium">{c.title}</h2>
-                <div className="text-sm text-gray-500 mb-2">Tipo: {c.type}</div>
-                <p className="mb-3 text-gray-700">Para ver o material, use os links abaixo.</p>
-
-                <div className="flex gap-3 items-center mb-3">
-                  {c.link && (
-                    <a
-                      href={c.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
-                    >
-                      Abrir vídeo
-                    </a>
-                  )}
-
-                  {c.pdfUrl && (
-                    <a
-                      href={c.pdfUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block px-4 py-2 bg-slate-700 text-white rounded hover:bg-slate-800"
-                    >
-                      Abrir PDF dos exercícios
-                    </a>
-                  )}
-                </div>
-
-                {c.pdfUrl && (
-                  <div className="mt-2 p-3 bg-gray-50 rounded border">
-                    <div className="text-sm font-medium text-slate-700 mb-1">Exercícios / Material para download</div>
-                    <a href={c.pdfUrl} target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline break-all">
-                      {c.pdfUrl}
-                    </a>
+          if (isVideo) {
+            return (
+              <article key={cid} className="border rounded p-4 shadow-sm bg-white">
+                <div className="md:flex md:gap-4 items-start">
+                  <div className="md:w-1/3 mb-4 md:mb-0">
+                    {thumb ? (
+                      <img src={thumb} alt={`Thumb - ${title}`} className="w-full h-44 object-cover rounded" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+                    ) : (
+                      <div className="w-full h-44 bg-accent-50 rounded flex items-center justify-center text-accent-400">Sem imagem disponível</div>
+                    )}
                   </div>
-                )}
+
+                  <div className="md:flex-1 flex flex-col justify-between">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <h2 className="text-lg font-medium text-slate-800">{title}</h2>
+                        <span className="inline-block px-2 py-1 text-xs font-semibold rounded bg-accent-100 text-accent-800">{mapTypeDisplay(type)}</span>
+                      </div>
+                      <p className="mb-3 text-gray-700">Para ver o material, use o botão abaixo.</p>
+                    </div>
+
+                    <div className="mt-3">
+                      {openUrl ? (
+                        <a href={openUrl} target="_blank" rel="noopener noreferrer" className="inline-block px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition">Abrir vídeo</a>
+                      ) : (
+                        <div className="text-sm text-gray-500">Nenhum link disponível para este conteúdo.</div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </article>
+            )
+          }
+
+          return (
+            <article key={cid} className="border rounded p-4 shadow-sm bg-white flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-medium text-slate-800">{title}</h2>
+                <div className="text-sm text-gray-500 mt-1">{mapTypeSmall(type)}</div>
               </div>
-            </div>
-          </article>
-        ))}
+
+              {openUrl ? (
+                <a href={openUrl} target="_blank" rel="noopener noreferrer" className="inline-block px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition">Abrir exercício</a>
+              ) : (
+                <div className="text-sm text-gray-500">Nenhum link disponível para este conteúdo.</div>
+              )}
+            </article>
+          )
+        })}
       </div>
     </div>
   )

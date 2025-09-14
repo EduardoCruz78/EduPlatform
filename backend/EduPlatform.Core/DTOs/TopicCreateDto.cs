@@ -1,5 +1,4 @@
 ﻿// === File: /backend/EduPlatform.Core/DTOs/TopicCreateDto.cs ===
-using System.Collections.Generic;
 
 namespace EduPlatform.Core.DTOs;
 

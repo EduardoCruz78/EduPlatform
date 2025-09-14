@@ -1,7 +1,7 @@
 // === File: /frontend/src/App.jsx ===
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
-import Navbar from './components/Navbar'
+import Navbar from './components/MinimalNavbar'
 import Home from './pages/Home'
 import SeriesPage from './pages/Series'
 import SubjectPage from './pages/Subject'
@@ -13,6 +13,7 @@ import SeriesAdmin from './pages/admin/SeriesAdmin'
 import SubjectsAdmin from './pages/admin/SubjectsAdmin'
 import TopicsAdmin from './pages/admin/TopicsAdmin'
 import ContentsAdmin from './pages/admin/ContentsAdmin'
+import VestibularesAdmin from './pages/admin/VestibularesAdmin' // novo import
 
 export default function App() {
   return (
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="subjects" element={<SubjectsAdmin />} />
             <Route path="topics" element={<TopicsAdmin />} />
             <Route path="contents" element={<ContentsAdmin />} />
+            <Route path="vestibulares" element={<VestibularesAdmin />} /> {/* nova rota */}
           </Route>
         </Routes>
       </main>

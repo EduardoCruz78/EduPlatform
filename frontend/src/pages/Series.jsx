@@ -1,4 +1,4 @@
-// === File: /frontend/src/pages/Series.jsx ===
+// src/pages/Series.jsx
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../services/api'
@@ -34,7 +34,7 @@ export default function SeriesPage() {
   if (!series) return <div className="p-6">Série não encontrada.</div>
 
   return (
-    <div className="px-6 py-8 max-w-5xl mx-auto">
+    <div className="px-4 py-8 max-w-5xl mx-auto">
       <header className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">{series.name}</h1>
         <p className="text-sm text-slate-500 mt-1">Matérias disponíveis</p>
@@ -46,7 +46,7 @@ export default function SeriesPage() {
             <div>
               <div className="font-medium text-slate-800">{sub.name}</div>
             </div>
-            <Link to={`/subjects/${sub.id}`} className="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-700">Abrir</Link>
+            <Link to={`/subjects/${sub.id}`} className="px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700">Abrir</Link>
           </div>
         ))}
 

@@ -192,9 +192,17 @@ public class TopicsController : ControllerBase
         var contents = await _db.Contents
             .AsNoTracking()
             .Where(c => c.TopicId == id)
-            .Select(c => new { id = c.Id, title = c.Title, type = c.Type, link = c.Link, thumbnailUrl = c.ThumbnailUrl })
+            .Select(c => new {
+                id = c.Id,
+                title = c.Title,
+                type = c.Type,
+                link = c.Link,
+                thumbnailUrl = c.ThumbnailUrl,
+                pdfUrl = c.PdfUrl   // <-- incluído
+            })
             .ToListAsync();
 
         return Ok(contents);
     }
+
 }

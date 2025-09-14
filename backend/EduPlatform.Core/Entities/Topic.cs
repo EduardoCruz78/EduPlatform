@@ -1,5 +1,4 @@
 ﻿// === File: /backend/EduPlatform.Core/Entities/Topic.cs ===
-using System.ComponentModel.DataAnnotations;
 
 namespace EduPlatform.Core.Entities;
 
