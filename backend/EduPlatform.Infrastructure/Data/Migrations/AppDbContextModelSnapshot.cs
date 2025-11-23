@@ -22,7 +22,7 @@ namespace EduPlatform.Infrastructure.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("AccessibilityCategory", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.AccessibilityCategory", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -108,7 +108,7 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.ToTable("Checklists");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.Content", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Series.Content", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -145,7 +145,7 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.ToTable("Contents");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.Series", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Series.Series", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -162,7 +162,7 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.ToTable("Series");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.Subject", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Series.Subject", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -184,7 +184,7 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.ToTable("Subjects");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.Topic", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Series.Topic", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -201,7 +201,7 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.ToTable("Topics");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.TopicSubject", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Series.TopicSubject", b =>
                 {
                     b.Property<int>("TopicId")
                         .HasColumnType("integer");
@@ -239,7 +239,7 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.Vestibular", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Vestibular.Vestibular", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -247,17 +247,8 @@ namespace EduPlatform.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Date")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text");
-
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Url")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
@@ -265,7 +256,7 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.ToTable("Vestibulares");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.VestibularContent", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Vestibular.VestibularContent", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -273,13 +264,13 @@ namespace EduPlatform.Infrastructure.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("IsShared")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Link")
                         .HasColumnType("text");
 
                     b.Property<int?>("OriginalContentId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("OriginalTopicId")
                         .HasColumnType("integer");
 
                     b.Property<string>("PdfUrl")
@@ -304,7 +295,7 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.ToTable("VestibularContents");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.VestibularSubject", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Vestibular.VestibularSubject", b =>
                 {
                     b.Property<int>("VestibularId")
                         .HasColumnType("integer");
@@ -321,13 +312,13 @@ namespace EduPlatform.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("EduPlatform.Core.Entities.AccessibilityCategoryTopic", b =>
                 {
-                    b.HasOne("AccessibilityCategory", "AccessibilityCategory")
+                    b.HasOne("EduPlatform.Core.Entities.AccessibilityCategory", "AccessibilityCategory")
                         .WithMany("CategoryTopics")
                         .HasForeignKey("AccessibilityCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EduPlatform.Core.Entities.Topic", "Topic")
+                    b.HasOne("EduPlatform.Core.Entities.Series.Topic", "Topic")
                         .WithMany()
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -340,7 +331,7 @@ namespace EduPlatform.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("EduPlatform.Core.Entities.AccessibilityTheme", b =>
                 {
-                    b.HasOne("AccessibilityCategory", "AccessibilityCategory")
+                    b.HasOne("EduPlatform.Core.Entities.AccessibilityCategory", "AccessibilityCategory")
                         .WithMany("Themes")
                         .HasForeignKey("AccessibilityCategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -351,7 +342,7 @@ namespace EduPlatform.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("EduPlatform.Core.Entities.Checklist", b =>
                 {
-                    b.HasOne("EduPlatform.Core.Entities.Content", "Content")
+                    b.HasOne("EduPlatform.Core.Entities.Series.Content", "Content")
                         .WithMany()
                         .HasForeignKey("ContentId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -368,9 +359,9 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.Content", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Series.Content", b =>
                 {
-                    b.HasOne("EduPlatform.Core.Entities.Topic", "Topic")
+                    b.HasOne("EduPlatform.Core.Entities.Series.Topic", "Topic")
                         .WithMany("Contents")
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -379,9 +370,9 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.Navigation("Topic");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.Subject", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Series.Subject", b =>
                 {
-                    b.HasOne("EduPlatform.Core.Entities.Series", "Series")
+                    b.HasOne("EduPlatform.Core.Entities.Series.Series", "Series")
                         .WithMany("Subjects")
                         .HasForeignKey("SeriesId")
                         .OnDelete(DeleteBehavior.SetNull);
@@ -389,15 +380,15 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.Navigation("Series");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.TopicSubject", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Series.TopicSubject", b =>
                 {
-                    b.HasOne("EduPlatform.Core.Entities.Subject", "Subject")
+                    b.HasOne("EduPlatform.Core.Entities.Series.Subject", "Subject")
                         .WithMany("TopicSubjects")
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EduPlatform.Core.Entities.Topic", "Topic")
+                    b.HasOne("EduPlatform.Core.Entities.Series.Topic", "Topic")
                         .WithMany("TopicSubjects")
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -408,14 +399,14 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.Navigation("Topic");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.VestibularContent", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Vestibular.VestibularContent", b =>
                 {
-                    b.HasOne("EduPlatform.Core.Entities.Content", "OriginalContent")
+                    b.HasOne("EduPlatform.Core.Entities.Series.Content", "OriginalContent")
                         .WithMany()
                         .HasForeignKey("OriginalContentId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("EduPlatform.Core.Entities.Vestibular", "Vestibular")
+                    b.HasOne("EduPlatform.Core.Entities.Vestibular.Vestibular", "Vestibular")
                         .WithMany("Contents")
                         .HasForeignKey("VestibularId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -426,15 +417,15 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.Navigation("Vestibular");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.VestibularSubject", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Vestibular.VestibularSubject", b =>
                 {
-                    b.HasOne("EduPlatform.Core.Entities.Subject", "Subject")
+                    b.HasOne("EduPlatform.Core.Entities.Series.Subject", "Subject")
                         .WithMany()
                         .HasForeignKey("SubjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EduPlatform.Core.Entities.Vestibular", "Vestibular")
+                    b.HasOne("EduPlatform.Core.Entities.Vestibular.Vestibular", "Vestibular")
                         .WithMany("VestibularSubjects")
                         .HasForeignKey("VestibularId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -445,24 +436,24 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.Navigation("Vestibular");
                 });
 
-            modelBuilder.Entity("AccessibilityCategory", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.AccessibilityCategory", b =>
                 {
                     b.Navigation("CategoryTopics");
 
                     b.Navigation("Themes");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.Series", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Series.Series", b =>
                 {
                     b.Navigation("Subjects");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.Subject", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Series.Subject", b =>
                 {
                     b.Navigation("TopicSubjects");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.Topic", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Series.Topic", b =>
                 {
                     b.Navigation("Contents");
 
@@ -474,7 +465,7 @@ namespace EduPlatform.Infrastructure.Data.Migrations
                     b.Navigation("Checklists");
                 });
 
-            modelBuilder.Entity("EduPlatform.Core.Entities.Vestibular", b =>
+            modelBuilder.Entity("EduPlatform.Core.Entities.Vestibular.Vestibular", b =>
                 {
                     b.Navigation("Contents");
 
